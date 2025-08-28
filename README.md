@@ -39,5 +39,3 @@ With modern technologies like **React, Material UI, Node.js, and MySQL**, this p
 
 ---
 
-## 📂 Project Structure
-
