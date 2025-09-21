@@ -35,7 +35,7 @@ With modern technologies like **React, Material UI, Node.js, and MySQL**, this p
 - **Backend:** Node.js (Express.js)  
 - **Database:** MySQL  
 - **Design:** Figma (for campus map and UI/UX prototyping)  
-- **Version Control & Collaboration:** Git & GitHub  
+- **Version Control & Collaboration:** Git & GitHub   ???
 
 ---
 
