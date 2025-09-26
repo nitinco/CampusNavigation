@@ -1,88 +1,71 @@
-// 1. Create map centered near RTU CSE department
-const map = L.map('map').setView([25.14184, 75.80711], 18);
+// Create map and set initial view
+const map = L.map('map').setView([25.1383, 75.8076], 16); // Center of the campus
 
-const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, made by coders';
-
-// 2. Add OpenStreetMap tiles
-const tiles = L.tileLayer(tileUrl, { maxZoom: 19, attribution });
-tiles.addTo(map);
-
-const rtuGeoJson = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Marker Entrance Computer Science Department",
-        "marker-color": "#e83030",
-        "marker-size": "small",
-        "marker-symbol": "circle"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [75.80711623703291, 25.14184015498867]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "stroke": "#5e5e5e",
-        "stroke-width": 1.1,
-        "stroke-opacity": 1,
-        "fill": "blue",
-        "fill-opacity": 0.4,
-        "name": "Computer Science Department"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [75.80692052170275, 25.141957160589627],
-          [75.80673708012654, 25.141703028699013],
-          [75.80678325173173, 25.14167544434318],
-          [75.8065812274956, 25.141392270462788],
-          [75.80686492868111, 25.14122293102689],
-          [75.80704071514572, 25.141470347217236],
-          [75.80709772801976, 25.14143653453887],
-          [75.8073049642818, 25.141730480628226],
-          [75.80723082347615, 25.141769897221124],
-          [75.80719581367623, 25.14172329448634],
-          [75.80710961304064, 25.14177387587145],
-          [75.80714579106112, 25.14182297952101],
-          [75.80709052609944, 25.14185552312705],
-          [75.80705457659386, 25.141805494032027],
-          [75.80695718036978, 25.14186303600573],
-          [75.80699335838901, 25.14191213961948],
-          [75.80692052170275, 25.141957160589627]
-        ]]
-      }
-    }
-  ]
-};
-
-// 3. Add GeoJSON to map 
-const geoLayer = L.geoJSON(rtuGeoJson, {
-  style: function(feature) {
-    return {
-      color: feature.properties.stroke || "#5e5e5e",
-      weight: feature.properties["stroke-width"] || 1.1,
-      fillColor: feature.properties.fill || "#b8b8b8",
-      fillOpacity: feature.properties["fill-opacity"] || 0.5
-    };
-  },
-  pointToLayer: function(feature, latlng) {
-    return L.circleMarker(latlng, {
-      radius: 6,
-      color: feature.properties["marker-color"] || "red",
-      fillOpacity: 1
-    });
-  },
-  onEachFeature: function(feature, layer) {
-    if (feature.properties && feature.properties.name) {
-      layer.bindPopup(feature.properties.name);
-    }
-  }
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Fit map view to show entire data
-map.fitBounds(geoLayer.getBounds());
+// Load GeoJSON data from external file
+fetch('data.geojson')
+  .then(response => response.json())
+  .then(data => {
+    // Add GeoJSON layer to map
+    L.geoJSON(data, {
+      onEachFeature: (feature, layer) => {
+        if (feature.properties && feature.properties.name) {
+          layer.bindPopup(feature.properties.name);
+        }
+      },
+      style: (feature) => {
+        if (feature.geometry.type === "LineString") {
+          return { color: "blue", weight: 4 };
+        }
+      },
+      pointToLayer: (feature, latlng) => {
+        return L.marker(latlng);
+      }
+    }).addTo(map);
+  })
+  .catch(error => console.error('Error loading GeoJSON:', error));
+
+// Create "Locate Me" button
+const locateBtn = L.control({ position: 'topleft' });
+
+locateBtn.onAdd = function(map) {
+  let div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+  div.innerHTML = '<button title="Locate Me">📍</button>';
+  div.style.cursor = 'pointer';
+
+  div.onclick = function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          console.log("Current location:", lat, lng);
+
+          L.marker([lat, lng]).addTo(map)
+            .bindPopup("You are here")
+            .openPopup();
+          map.setView([lat, lng], 17);
+        },
+        function(error) {
+          console.error("Geolocation error:", error);
+          alert("Could not get your location. Check browser permissions.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser");
+    }
+  };
+
+  return div;
+};
+
+locateBtn.addTo(map);
+
+
+  
+
+
