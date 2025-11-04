@@ -1,41 +1,73 @@
-# 🏫 Campus Navigation Center
+# Welcome to your Lovable project
 
-The **Campus Navigation Center** is a smart, user-friendly platform designed to simplify navigation within a university or college campus.  
-It provides interactive campus maps, optimized routing, and detailed facility information to help students, faculty, and visitors find their way efficiently.
+## Project info
 
-With modern technologies like **React, Material UI, Node.js, and MySQL**, this project delivers a seamless experience that enhances accessibility and saves time for campus communities.
+**URL**: https://lovable.dev/projects/83326b7d-5e3a-4fef-bb63-e267ccc2e729
 
----
+## How can I edit this code?
 
-## 🚀 Features
+There are several ways of editing your application.
 
-- 📍 **Interactive Campus Map**  
-  Visual map of the campus, designed in Figma, showcasing buildings, pathways, and facilities.
+**Use Lovable**
 
-- 🧭 **Smart Navigation & Routing**  
-  Provides the shortest and most convenient path between two locations on campus.
+Simply visit the [Lovable Project](https://lovable.dev/projects/83326b7d-5e3a-4fef-bb63-e267ccc2e729) and start prompting.
 
-- 🏢 **Point of Interest (POI) Directory**  
-  Quick access to details of important locations such as classrooms, departments, libraries, labs, cafeterias, and hostels.
+Changes made via Lovable will be committed automatically to this repo.
 
-- 📱 **Modern User Interface**  
-  Developed with React.js and Material UI (MUI) for a clean and responsive design.
+**Use your preferred IDE**
 
-- 🔍 **Search & Filter Options**  
-  Search locations by name or category (academic, residential, recreational, etc.).
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-- 🌐 **Cross-Platform Accessibility**  
-  Can be deployed as a web application, accessible from laptops and mobile devices.
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
----
+Follow these steps:
 
-## 🛠️ Tech Stack
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-- **Frontend:** React.js, Material UI (MUI)  
-- **Backend:** Node.js (Express.js)  
-- **Database:** MySQL  
-- **Design:** Figma (for campus map and UI/UX prototyping)  
-- **Version Control & Collaboration:** Git & GitHub   ???
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
----
+# Step 3: Install the necessary dependencies.
+npm i
 
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+```
+
+**Edit a file directly in GitHub**
+
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
+
+**Use GitHub Codespaces**
+
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
+
+## What technologies are used for this project?
+
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/83326b7d-5e3a-4fef-bb63-e267ccc2e729) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
