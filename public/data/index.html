@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Campus Routing</title>
+    <style>
+        #map { height: 100vh; width: 100%; }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+// --- Initialize Map ---
+const map = L.map("map").setView([25.1405, 75.8085], 17);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+let geojsonData;
+let nodes = [];             // all snapping nodes
+let graph = {};             // adjacency list
+let startNode = null;
+let endNode = null;
+let pathLayer = null;
+
+// --- Utility: distance between coords ---
+function dist(a, b) {
+    const dx = a[0] - b[0];
+    const dy = a[1] - b[1];
+    return Math.sqrt(dx*dx + dy*dy);
+}
+
+// --- Load your campus GeoJSON ---
+fetch("map_fixed.geojson")
+.then(r => r.json())
+.then(json => {
+    geojsonData = json;
+
+    L.geoJSON(json).addTo(map);
+
+    buildNodes(json);
+    buildGraph(json);
+
+    console.log("Nodes:", nodes.length);
+    console.log("Graph:", graph);
+});
+ 
+
+// --- Extract all endpoints from LineStrings (these are valid routing nodes) ---
+function buildNodes(data) {
+    const nodeSet = new Set();
+
+    data.features.forEach(f => {
+        if (f.geometry.type === "LineString") {
+            let c = f.geometry.coordinates;
+            let start = c[0];
+            let end = c[c.length - 1];
+
+            nodeSet.add(start.toString());
+            nodeSet.add(end.toString());
+        }
+    });
+
+    nodes = Array.from(nodeSet).map(s => s.split(",").map(Number));
+}
+
+
+// --- Build adjacency graph from LineStrings ---
+function buildGraph(data) {
+    nodes.forEach(n => graph[n] = []);
+
+    data.features.forEach(f => {
+        if (f.geometry.type === "LineString") {
+            let c = f.geometry.coordinates;
+
+            let a = c[0].toString();
+            let b = c[c.length-1].toString();
+
+            let d = dist(c[0], c[c.length-1]);
+
+            graph[a].push({ node: b, weight: d });
+            graph[b].push({ node: a, weight: d });
+        }
+    });
+}
+
+
+// --- Snap clicked point to nearest node ---
+function snapToNode(latlng) {
+    let p = [latlng.lng, latlng.lat];
+    let best = null;
+    let bestD = Infinity;
+
+    nodes.forEach(n => {
+        let d = dist(p, n);
+        if (d < bestD) {
+            bestD = d;
+            best = n;
+        }
+    });
+
+    return best;
+}
+
+
+// --- Dijkstra for shortest path ---
+function dijkstra(start, end) {
+    let distMap = {};
+    let prev = {};
+    let pq = [];
+
+    Object.keys(graph).forEach(n => distMap[n] = Infinity);
+    distMap[start] = 0;
+
+    pq.push([0, start]);
+
+    while (pq.length) {
+        pq.sort((a,b)=>a[0]-b[0]);
+        let [d,u] = pq.shift();
+
+        if (u === end) break;
+
+        graph[u].forEach(edge => {
+            let v = edge.node;
+            let nd = d + edge.weight;
+
+            if (nd < distMap[v]) {
+                distMap[v] = nd;
+                prev[v] = u;
+                pq.push([nd,v]);
+            }
+        });
+    }
+
+    // reconstruct path
+    let path = [];
+    let cur = end;
+    while (cur) {
+        path.push(cur);
+        cur = prev[cur];
+    }
+    path.reverse();
+
+    return path;
+}
+
+
+// --- Click handler ---
+map.on("click", e => {
+    let nearest = snapToNode(e.latlng);
+    if (!startNode) {
+        startNode = nearest;
+        L.marker([nearest[1], nearest[0]], {icon: blueIcon}).addTo(map).bindPopup("Start");
+    } else if (!endNode) {
+        endNode = nearest;
+        L.marker([nearest[1], nearest[0]], {icon: redIcon}).addTo(map).bindPopup("End");
+        drawRoute();
+    }
+});
+
+// --- Custom icons ---
+const blueIcon = new L.Icon({
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+    shadowUrl: "https://unpkg.com/leaflet/dist/images/marker-shadow.png",
+    iconSize: [25, 41], shadowSize: [41, 41]
+});
+
+const redIcon = new L.Icon({
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+    shadowUrl: "https://unpkg.com/leaflet/dist/images/marker-shadow.png",
+    iconSize: [25, 41], shadowSize: [41, 41]
+});
+
+// --- Draw route ---
+function drawRoute() {
+    if (!startNode || !endNode) return;
+
+    let s = startNode.toString();
+    let e = endNode.toString();
+
+    let path = dijkstra(s, e);
+
+    if (path.length === 0) {
+        alert("No path found (this shouldn't happen anymore).");
+        return;
+    }
+
+    let latlngs = path.map(id => {
+        let n = id.split(",").map(Number);
+        return [n[1], n[0]];
+    });
+
+    if (pathLayer) map.removeLayer(pathLayer);
+
+    pathLayer = L.polyline(latlngs, {color:'blue', weight:5}).addTo(map);
+}
+</script>
+</body>
+</html>
