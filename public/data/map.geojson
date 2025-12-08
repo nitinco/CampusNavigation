@@ -129,7 +129,7 @@
         {
             "type": "Feature",
             "properties": {
-                "name": "Marker : Proctor Office",
+                "name": "Proctor Office",
                 "marker-color": "#7e7e7e",
                 "marker-size": "small",
                 "marker-symbol": "circle"
@@ -747,7 +747,7 @@
         {
             "type": "Feature",
             "properties": {
-                "name": "Marker Entrance Computer Science Department",
+                "name": "Computer Science Department",
                 "marker-color": "#e83030",
                 "marker-size": "small",
                 "marker-symbol": "circle"

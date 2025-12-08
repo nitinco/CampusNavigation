@@ -105,6 +105,40 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
           }
         });
 
+        // Add layer for point features (markers)
+        map.current.addLayer({
+          id: 'campus-points',
+          type: 'circle',
+          source: 'campus-data',
+          filter: ['==', ['geometry-type'], 'Point'],
+          paint: {
+            // use marker-color property when present, otherwise fallback
+            'circle-color': ['coalesce', ['get', 'marker-color'], '#ef4444'],
+            'circle-radius': 6,
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': 1
+          }
+        });
+
+        // Add a symbol layer for labels (works for Point and Polygon centroids)
+        map.current.addLayer({
+          id: 'campus-labels',
+          type: 'symbol',
+          source: 'campus-data',
+          layout: {
+            'text-field': ['to-string', ['coalesce', ['get', 'name'], ['get', 'properties.name'], '']],
+            'text-font': ['Inter Regular', 'Arial Unicode MS Regular'],
+            'text-size': 12,
+            'text-offset': [0, 1.2],
+            'text-anchor': 'top'
+          },
+          paint: {
+            'text-color': '#0f172a',
+            'text-halo-color': 'rgba(255,255,255,0.85)',
+            'text-halo-width': 1
+          }
+        });
+
         // Build routing graph from LineString features
         const graph: Record<string, Array<{ to: string; w: number }>> = {};
         const coordKey = (c: [number, number]) => `${c[0].toFixed(6)},${c[1].toFixed(6)}`;

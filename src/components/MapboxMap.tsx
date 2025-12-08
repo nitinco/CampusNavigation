@@ -14,9 +14,14 @@ interface MapboxMapProps {
 interface MapboxMapPropsEx extends MapboxMapProps {
   mode?: 'map' | 'buildings' | 'navigate';
   typeFilter?: string; // used when mode='buildings'
+  // Optional external routing inputs - when both provided and `autoRoute` is true,
+  // the map will compute and display the route between them.
+  fromCoord?: [number, number] | null;
+  toCoord?: [number, number] | null;
+  autoRoute?: boolean;
 }
 
-export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all' }: MapboxMapPropsEx) => {
+export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all', fromCoord = null, toCoord = null, autoRoute = false }: MapboxMapPropsEx) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [sourceCoord, setSourceCoord] = useState<[number, number] | null>(null);
@@ -321,6 +326,9 @@ export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all' }: 
         // Expose drawRoute for controls outside
         (map.current as any)._drawRoute = drawRoute;
 
+        // Keep track of whether campus route layers were hidden by auto-route
+        (map.current as any)._campusRoutesHidden = false;
+
         // If we're in buildings mode, apply the initial filter
         if (mode === 'buildings') {
           const applyBuildingFilter = (type: string) => {
@@ -413,6 +421,63 @@ export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all' }: 
       console.error('Mapbox error:', e);
     });
   };
+
+  // Auto-draw route when external fromCoord/toCoord props change
+  useEffect(() => {
+    if (!map.current || !isMapReady) return;
+
+    const routing = (map.current as any)._routing;
+    const draw = (map.current as any)._drawRoute;
+    if (!routing || !draw) return;
+
+    // clear any existing routing if we don't have both coords
+    if (!fromCoord || !toCoord) {
+      // clear route layers/sources
+      if (map.current.getLayer('routing-line')) map.current.removeLayer('routing-line');
+      if (map.current.getLayer('routing-outline')) map.current.removeLayer('routing-outline');
+      if (map.current.getSource('routing')) map.current.removeSource('routing');
+
+      // restore campus route visibility if we had hidden it
+      try {
+        if ((map.current as any)._campusRoutesHidden) {
+          if (map.current.getLayer('campus-routes')) map.current.setLayoutProperty('campus-routes', 'visibility', 'visible');
+          if (map.current.getLayer('campus-routes-outline')) map.current.setLayoutProperty('campus-routes-outline', 'visibility', 'visible');
+          (map.current as any)._campusRoutesHidden = false;
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      return;
+    }
+
+    try {
+      // compute path using routing.dijkstra (graph built on load)
+      const path = routing.dijkstra(fromCoord, toCoord);
+      if (!path || !path.length) {
+        // draw straight line if no graph path
+        draw([fromCoord, toCoord]);
+      } else {
+        draw(path);
+      }
+
+      // hide campus routes layer to emphasize selected route
+      try {
+        if (map.current.getLayer('campus-routes')) map.current.setLayoutProperty('campus-routes', 'visibility', 'none');
+        if (map.current.getLayer('campus-routes-outline')) map.current.setLayoutProperty('campus-routes-outline', 'visibility', 'none');
+        (map.current as any)._campusRoutesHidden = true;
+      } catch (e) {
+        // ignore
+      }
+
+      // fit bounds to the route
+      const coords = path && path.length ? path : [fromCoord, toCoord];
+      const bounds = coords.reduce((b: any, coord: [number, number]) => b.extend(coord as any), new mapboxgl.LngLatBounds(coords[0] as any, coords[0] as any));
+      map.current.fitBounds(bounds, { padding: 60, maxZoom: 17 });
+    } catch (err) {
+      console.error('Auto-route error:', err);
+    }
+  }, [fromCoord, toCoord, isMapReady, autoRoute]);
 
   // Token is read from env; no interactive save handler required.
 

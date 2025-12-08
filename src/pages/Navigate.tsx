@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { NavigationMap } from "@/components/NavigationMap";
+import { MapboxMap } from "@/components/MapboxMap";
 
 const Navigate = () => {
   const location = useLocation();
@@ -167,34 +167,46 @@ const Navigate = () => {
 
         <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
           <div className="lg:col-span-2 order-2 lg:order-1">
-            {showDirections && toBuilding ? (
-              <div className="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-xl overflow-hidden shadow-elevated border">
-                <NavigationMap
-                  fromCoords={getFromCoords()}
-                  toCoords={toBuilding.coordinates}
-                  trackUserLocation={from === "current-location"}
-                  onLocationUpdate={handleLocationUpdate}
-                  onBuildingSelect={handleBuildingSelect}
-                />
-                {from === "current-location" && showDirections && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-10">
-                    <Clock className="h-4 w-4" />
-                    <span className="font-semibold">ETA: {eta} min</span>
-                    <span className="text-xs opacity-80">({Math.round(remainingDistance)}m left)</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="h-[400px] md:h-[500px] lg:h-[600px] rounded-xl overflow-hidden bg-muted flex items-center justify-center border">
-                <div className="text-center p-4 md:p-8">
-                  <Navigation className="h-12 w-12 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-base md:text-lg font-semibold mb-2">Ready to Navigate</h3>
-                  <p className="text-sm md:text-base text-muted-foreground">
-                    Select your starting point and destination, then click "Get Directions" to see the route on the map
-                  </p>
+            <div className="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-xl overflow-hidden bg-card border shadow-sm">
+              <MapboxMap
+                mode="map"
+                onFeatureClick={(feature) => {
+                  const name = feature.properties?.name || feature.properties?.["properties.name"] || '';
+                  // try to find building match by name
+                  const found = buildings.find((b) => String(b.name).toLowerCase() === String(name).toLowerCase());
+                  if (found) setTo(found.id);
+                }}
+                fromCoord={
+                  from === 'current-location'
+                    ? userLocation
+                      ? [userLocation.lng, userLocation.lat]
+                      : null
+                    : fromBuilding
+                    ? [fromBuilding.coordinates.lng, fromBuilding.coordinates.lat]
+                    : null
+                }
+                toCoord={toBuilding ? [toBuilding.coordinates.lng, toBuilding.coordinates.lat] : null}
+                autoRoute={showDirections}
+              />
+              {showDirections && toBuilding && (
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-10">
+                  <Clock className="h-4 w-4" />
+                  <span className="font-semibold">ETA: {eta} min</span>
+                  <span className="text-xs opacity-80">({Math.round(remainingDistance)}m left)</span>
                 </div>
-              </div>
-            )}
+              )}
+              {!showDirections && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-center p-4 md:p-8 bg-transparent pointer-events-none">
+                    <Navigation className="h-12 w-12 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4 opacity-60" />
+                    <h3 className="text-base md:text-lg font-semibold mb-2">Ready to Navigate</h3>
+                    <p className="text-sm md:text-base text-muted-foreground">
+                      Select your starting point and destination, then click "Get Directions"
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <div className="order-1 lg:order-2 space-y-4">
             <Card>
