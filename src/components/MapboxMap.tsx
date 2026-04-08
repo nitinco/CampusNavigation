@@ -29,20 +29,16 @@ export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all', fr
   const [useCurrentLocation, setUseCurrentLocation] = useState<boolean>(true);
   const [sourceBuildingId, setSourceBuildingId] = useState<string | undefined>();
   const [destBuildingId, setDestBuildingId] = useState<string | undefined>();
-  // Load token from Vite env var `VITE_MAPBOX_TOKEN` or fallback to empty string.
-  const DEFAULT_MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string) || '';
-  const [mapboxToken] = useState<string>(DEFAULT_MAPBOX_TOKEN);
   const [isMapReady, setIsMapReady] = useState(false);
+  const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
 
-  const initializeMap = (token: string) => {
+  const initializeMap = () => {
     if (!mapContainer.current || map.current) return;
     
 
-    mapboxgl.accessToken = token;
-    
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: MAP_STYLE_URL,
       center: [75.808, 25.143], // Center of the campus based on GeoJSON data
       zoom: 15.5,
       pitch: 45,
@@ -542,26 +538,12 @@ export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all', fr
   };
 
   useEffect(() => {
-    if (mapboxToken) {
-      initializeMap(mapboxToken);
-    }
+    initializeMap();
 
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken]);
-
-  if (!mapboxToken) {
-    // No interactive prompt — show a simple message overlay. Token should be supplied
-    // via `VITE_MAPBOX_TOKEN` for seamless UX.
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
-        <div className="text-center text-sm text-muted-foreground">
-          Mapbox token not configured. Set `VITE_MAPBOX_TOKEN` in your environment to enable the map.
-        </div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="relative w-full h-full">

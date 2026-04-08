@@ -19,18 +19,15 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
   const map = useRef<mapboxgl.Map | null>(null);
   const userLocationMarker = useRef<mapboxgl.Marker | null>(null);
   const lastPosition = useRef<{ lng: number; lat: number; timestamp: number } | null>(null);
-  const DEFAULT_MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string) || '';
-  const [mapboxToken] = useState<string>(DEFAULT_MAPBOX_TOKEN);
   const [isMapReady, setIsMapReady] = useState(false);
+  const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
 
-  const initializeMap = (token: string) => {
+  const initializeMap = () => {
     if (!mapContainer.current || map.current) return;
 
-    mapboxgl.accessToken = token;
-    
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: MAP_STYLE_URL,
       center: toCoords || fromCoords || [75.808, 25.143],
       zoom: 16,
       pitch: 0,
@@ -450,11 +447,7 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
   }, [isMapReady, trackUserLocation, fromCoords, toCoords]);
 
   useEffect(() => {
-    if (mapboxToken) {
-      initializeMap(mapboxToken);
-    } else {
-      console.warn('Mapbox token not provided. Set VITE_MAPBOX_TOKEN in your environment.');
-    }
+    initializeMap();
 
     return () => {
       if (map.current) {
@@ -462,17 +455,7 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
         map.current = null;
       }
     };
-  }, [mapboxToken]);
-
-  if (!mapboxToken) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
-        <div className="text-center text-sm text-muted-foreground">
-          Mapbox token not configured. Set `VITE_MAPBOX_TOKEN` in your environment to enable the map.
-        </div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="relative w-full h-full">
