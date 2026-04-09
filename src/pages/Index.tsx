@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Building2, Navigation, ArrowRight } from "lucide-react";
+import { assetUrl } from "@/lib/assetUrl";
 
 const Index = () => {
+  const logoUrl = assetUrl("logo.png");
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-background via-background to-muted">
       {/* Hero Section */}
@@ -12,7 +15,7 @@ const Index = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <img src="/logo.png" alt="Navi-Gator" className="h-16 w-16 drop-shadow-lg" />
+                <img src={logoUrl} alt="Navi-Gator" className="h-16 w-16 drop-shadow-lg" />
                 <div>
                   <h1 className="text-5xl md:text-6xl font-bold text-primary">Navi-Gator</h1>
                   <p className="text-lg text-muted-foreground">Campus Navigator</p>
@@ -53,7 +56,7 @@ const Index = () => {
           <div className="flex justify-center md:justify-end">
             <div className="relative w-full max-w-sm">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-3xl"></div>
-              <img src="/logo.png" alt="Navi-Gator" className="relative w-full drop-shadow-2xl" />
+              <img src={logoUrl} alt="Navi-Gator" className="relative w-full drop-shadow-2xl" />
             </div>
           </div>
         </div>

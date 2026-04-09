@@ -16,8 +16,11 @@ import {
   Linkedin,
   Mail,
 } from "lucide-react";
+import { assetUrl } from "@/lib/assetUrl";
 
 const Landing = () => {
+  const logoUrl = assetUrl("logo.png");
+
   const teamMembers = [
     {
       name: "Nitin",
@@ -154,7 +157,7 @@ const Landing = () => {
             <div className="relative w-full max-w-sm">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-3xl"></div>
               <img
-                src="/logo.png"
+                src={logoUrl}
                 alt="Navi-Gator Campus Navigator"
                 className="relative w-full drop-shadow-2xl"
               />
@@ -619,7 +622,7 @@ const Landing = () => {
             {/* Brand */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <img src="/logo.png" alt="Navi-Gator" className="h-8 w-8" />
+                <img src={logoUrl} alt="Navi-Gator" className="h-8 w-8" />
                 <span className="font-bold text-lg">Navi-Gator</span>
               </div>
               <p className="text-sm text-muted-foreground">

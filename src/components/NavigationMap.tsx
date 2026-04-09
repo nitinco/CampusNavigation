@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Key } from 'lucide-react';
+import { assetUrl } from '@/lib/assetUrl';
 
 interface NavigationMapProps {
   fromCoords?: { lng: number; lat: number };
@@ -55,7 +56,7 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
 
       try {
           // Load GeoJSON data (use map.geojson)
-          const response = await fetch('/data/map.geojson');
+          const response = await fetch(assetUrl('data/map.geojson'));
           const geojsonData = await response.json();
 
           // Add the GeoJSON source

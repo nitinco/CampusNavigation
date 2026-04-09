@@ -14,8 +14,10 @@ import {
 import { useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { MapboxMap } from "@/components/MapboxMap";
+import { assetUrl } from "@/lib/assetUrl";
 
 const Navigate = () => {
+  const logoUrl = assetUrl("logo.png");
   const location = useLocation();
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
@@ -155,7 +157,7 @@ const Navigate = () => {
       <div className="container px-4 py-6 max-w-7xl mx-auto">
         <div className="mb-4 md:mb-6 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Navi-Gator" className="h-10 w-10" />
+            <img src={logoUrl} alt="Navi-Gator" className="h-10 w-10" />
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">Navigation</h1>
               <p className="text-sm md:text-base text-muted-foreground">

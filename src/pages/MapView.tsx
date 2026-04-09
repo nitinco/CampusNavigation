@@ -6,8 +6,10 @@ import { Building2, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { assetUrl } from "@/lib/assetUrl";
 
 const MapView = () => {
+  const logoUrl = assetUrl("logo.png");
   const [selectedBuilding, setSelectedBuilding] = useState<string | undefined>();
   const navigate = useNavigate();
   
@@ -18,7 +20,7 @@ const MapView = () => {
       <div className="container px-4 py-6">
         <div className="mb-6 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Navi-Gator" className="h-10 w-10" />
+            <img src={logoUrl} alt="Navi-Gator" className="h-10 w-10" />
             <div>
               <h1 className="text-3xl font-bold">Campus Map</h1>
               <p className="text-muted-foreground">

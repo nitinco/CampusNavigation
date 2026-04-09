@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Key } from 'lucide-react';
 import { buildings } from '@/data/buildings';
+import { assetUrl } from '@/lib/assetUrl';
 
 interface MapboxMapProps {
   onFeatureClick?: (feature: any) => void;
@@ -78,7 +79,7 @@ export const MapboxMap = ({ onFeatureClick, mode = 'map', typeFilter = 'all', fr
 
       try {
         // Load GeoJSON data
-        const response = await fetch('/data/map.geojson');
+        const response = await fetch(assetUrl('data/map.geojson'));
         const geojsonData = await response.json();
 
         // Add the GeoJSON source

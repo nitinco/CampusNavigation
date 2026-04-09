@@ -3,15 +3,17 @@ import { Building2, Navigation as NavIcon, Search, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { Link } from "react-router-dom";
+import { assetUrl } from "@/lib/assetUrl";
 
 export const Navigation = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const logoUrl = assetUrl("logo.png");
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <img src="/logo.png" alt="Navi-Gator" className="h-8 w-8" />
+          <img src={logoUrl} alt="Navi-Gator" className="h-8 w-8" />
           <div className="flex flex-col leading-tight">
             <span className="text-lg font-bold text-primary">Navi-Gator</span>
             <span className="text-xs text-muted-foreground hidden sm:inline">Campus Navigator</span>

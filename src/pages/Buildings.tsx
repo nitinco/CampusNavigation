@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { assetUrl } from "@/lib/assetUrl";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/select";
 
 const Buildings = () => {
+  const logoUrl = assetUrl("logo.png");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ const Buildings = () => {
       <div className="container px-4 py-6">
         <div className="mb-6 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Navi-Gator" className="h-10 w-10" />
+            <img src={logoUrl} alt="Navi-Gator" className="h-10 w-10" />
             <div>
               <h1 className="text-3xl font-bold">Campus Buildings</h1>
               <p className="text-muted-foreground">
