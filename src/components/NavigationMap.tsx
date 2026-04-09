@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -125,7 +125,6 @@ export const NavigationMap = ({ fromCoords, toCoords, trackUserLocation = false,
           source: 'campus-data',
           layout: {
             'text-field': ['to-string', ['coalesce', ['get', 'name'], ['get', 'properties.name'], '']],
-            'text-font': ['Inter Regular', 'Arial Unicode MS Regular'],
             'text-size': 12,
             'text-offset': [0, 1.2],
             'text-anchor': 'top'
